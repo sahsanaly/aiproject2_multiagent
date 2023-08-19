@@ -82,6 +82,9 @@ class ReflexAgent(Agent):
         closestFood = 0
         foodDistance = []
         rewardBias = 20
+        nonZeroAdjustment = 1
+        ghostNearby = 5
+        tooClose = 1
         
         foodList = newFood.asList()
         if len(foodList) > 0:
@@ -96,14 +99,14 @@ class ReflexAgent(Agent):
         for newGhostPosition in newGhostPositions:
             successorGhostDistance = manhattanDistance(newPos, newGhostPosition)
             
-            if successorGhostDistance <= 5:
-                score -= 1 / (successorGhostDistance+1) 
-            if successorGhostDistance <= 1:
-                score -= 1 / (successorGhostDistance+1) 
+            if successorGhostDistance <= ghostNearby:
+                score -= 1 / (successorGhostDistance + nonZeroAdjustment) 
+            if successorGhostDistance <= tooClose:
+                score -= 1 / (successorGhostDistance + nonZeroAdjustment) 
             if newScaredTimes[0] > 0:
                 score += rewardBias
                 if successorGhostDistance < newScaredTimes[0]:
-                    score += 1 / (successorGhostDistance+1)
+                    score += 1 / (successorGhostDistance + nonZeroAdjustment)
             
         return score
 
@@ -318,36 +321,38 @@ def betterEvaluationFunction(currentGameState):
     DESCRIPTION: <write something here so we know what you did>
     """
     "*** YOUR CODE HERE ***"
-    newPos = currentGameState.getPacmanPosition()
-    newFood = currentGameState.getFood()
-    newGhostStates = currentGameState.getGhostStates()
+    currentPosition = currentGameState.getPacmanPosition()
+    remainingFood = currentGameState.getFood()
+    ghostStates = currentGameState.getGhostStates()
     
-    newScaredTimes = [ghostState.scaredTimer for ghostState in newGhostStates]
+    scaredTimes = [ghostState.scaredTimer for ghostState in ghostStates]
     score = currentGameState.getScore()
-    newGhostPositions = currentGameState.getGhostPositions()
-    currentNumFood = currentGameState.getNumFood()
+    ghostPositions = currentGameState.getGhostPositions()
     closestFood = 0
     foodDistance = []
     rewardBias = 20
+    nonZeroAdjustment = 1
+    ghostNearby = 5
+    tooClose = 1
     
-    foodList = newFood.asList()
+    foodList = remainingFood.asList()
     if len(foodList) > 0:
         for food in foodList:
-            foodDistance.append(manhattanDistance(newPos, food))
+            foodDistance.append(manhattanDistance(currentPosition, food))
         closestFood = min(foodDistance)
         score += 1 / closestFood
     
-    for newGhostPosition in newGhostPositions:
-        successorGhostDistance = manhattanDistance(newPos, newGhostPosition)
+    for ghostPosition in ghostPositions:
+        ghostDistance = manhattanDistance(currentPosition, ghostPosition)
         
-        if successorGhostDistance <= 5:
-            score -= 1 / (successorGhostDistance+1) 
-        if successorGhostDistance <= 1:
-            score -= 1 / (successorGhostDistance+1) 
-        if newScaredTimes[0] > 0:
+        if ghostDistance <= ghostNearby:
+            score -= 1 / (ghostDistance + nonZeroAdjustment) 
+        if ghostDistance <= tooClose:
+            score -= 1 / (ghostDistance + nonZeroAdjustment) 
+        if scaredTimes[0] > 0:
             score += rewardBias
-            if successorGhostDistance < newScaredTimes[0]:
-                score += 1 / (successorGhostDistance+1)
+            if ghostDistance < scaredTimes[0]:
+                score += 1 / (ghostDistance + nonZeroAdjustment)
         
     return score
 
