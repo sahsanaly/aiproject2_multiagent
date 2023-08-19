@@ -103,7 +103,7 @@ class ReflexAgent(Agent):
             if newScaredTimes[0] > 0:
                 score += rewardBias
                 if successorGhostDistance < newScaredTimes[0]:
-                    score += 1 / successorGhostDistance
+                    score += 1 / (successorGhostDistance+1)
             
         return score
 
@@ -166,28 +166,42 @@ class MinimaxAgent(MultiAgentSearchAgent):
         Returns whether or not the game state is a losing state
         """
         "*** YOUR CODE HERE ***"
-        value, move = self.MaxValue(gameState)
-        return move
-        
-    def MaxValue(self, gameState):
-        if gameState.isWin():
-            return (gameState.getScore(), null)
-        v, move = -999999
-        for a in gameState.getLegalActions(0):
-            v2, a2 = self.MinValue(gameState.generateSuccessor(0, a))
-            if v2 > v:
-                v, move = v2, a
-        return v, move
+        return self.minimax(gameState, 0, 0)[1]
     
-    def MinValue(self, gameState):
-        if gameState.isWin():
-            return (gameState.getScore(), null)
-        v, move = 999999
-        for a in gameState.getLegalActions(0):
-            v2, a2 = self.MaxValue(gameState.generateSuccessor(0, a))
+    def minimax(self, gameState, depth, agentIndex):
+        if gameState.isWin() or gameState.isLose() or depth == self.depth:
+            return self.evaluationFunction(gameState), ""
+        
+        if agentIndex == 0:
+            result =  self.maxValue(gameState, depth, agentIndex)
+        else:
+            result = self.minValue(gameState, depth, agentIndex)
+
+        return result
+        
+    def maxValue(self, gameState, depth, agentIndex):
+        v, moves  = float('-inf'), ""
+        for a in gameState.getLegalActions(agentIndex):
+            successor = gameState.generateSuccessor(agentIndex, a)
+            v2 = self.minimax(successor, depth, agentIndex+1)[0]
             if v2 > v:
+                v, moves = v2, a
+        return v, moves
+    
+    def minValue(self, gameState, depth, agentIndex):
+        v, move = float('inf'), ""
+        for a in gameState.getLegalActions(agentIndex):
+            successor = gameState.generateSuccessor(agentIndex, a)
+            successor_agentIndex = agentIndex + 1
+            successor_depth = depth
+            if successor_agentIndex == gameState.getNumAgents():
+                successor_agentIndex = 0
+                successor_depth += 1
+            v2 = self.minimax(successor, successor_depth, successor_agentIndex)[0]
+            if v2 < v:
                 v, move = v2, a
         return v, move
+
 
 class AlphaBetaAgent(MultiAgentSearchAgent):
     """
