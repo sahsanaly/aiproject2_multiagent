@@ -279,12 +279,13 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
         if agentIndex == 0:
             result =  self.maxValue(gameState, depth, agentIndex)
         else:
-            result = self.minValue(gameState, depth, agentIndex)
+            result = self.chanceValue(gameState, depth, agentIndex)
 
         return result
         
     def maxValue(self, gameState, depth, agentIndex):
         v, move  = float('-inf'), ""
+        v2 = []
         for a in gameState.getLegalActions(agentIndex):
             successor = gameState.generateSuccessor(agentIndex, a)
             v2 = self.minimax(successor, depth, agentIndex+1)[0]
@@ -292,8 +293,10 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
                 v, move = v2, a
         return v, move
     
-    def minValue(self, gameState, depth, agentIndex):
+    def chanceValue(self, gameState, depth, agentIndex):
         v, move = float('inf'), ""
+        v2 = []
+        chanceNode = []
         for a in gameState.getLegalActions(agentIndex):
             successor = gameState.generateSuccessor(agentIndex, a)
             successor_agentIndex = agentIndex + 1
@@ -301,9 +304,10 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
             if successor_agentIndex == gameState.getNumAgents():
                 successor_agentIndex = 0
                 successor_depth += 1
-            v2 = self.minimax(successor, successor_depth, successor_agentIndex)[0]
-            if v2 < v:
-                v, move = v2, a
+            v2.append(self.minimax(successor, successor_depth, successor_agentIndex)[0])
+            chanceNode.append(a)
+        v = sum(v2) / len(v2)
+        move = random.choice(chanceNode)
         return v, move
 
 def betterEvaluationFunction(currentGameState):
