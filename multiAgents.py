@@ -318,16 +318,14 @@ def betterEvaluationFunction(currentGameState):
     DESCRIPTION: <write something here so we know what you did>
     """
     "*** YOUR CODE HERE ***"
-    successorGameState = currentGameState.generatePacmanSuccessor(action)
-    newPos = successorGameState.getPacmanPosition()
-    newFood = successorGameState.getFood()
-    newGhostStates = successorGameState.getGhostStates()
+    newPos = currentGameState.getPacmanPosition()
+    newFood = currentGameState.getFood()
+    newGhostStates = currentGameState.getGhostStates()
     
     newScaredTimes = [ghostState.scaredTimer for ghostState in newGhostStates]
-    score = successorGameState.getScore()
-    newGhostPositions = successorGameState.getGhostPositions()
+    score = currentGameState.getScore()
+    newGhostPositions = currentGameState.getGhostPositions()
     currentNumFood = currentGameState.getNumFood()
-    newNumFood = successorGameState.getNumFood()
     closestFood = 0
     foodDistance = []
     rewardBias = 20
@@ -338,9 +336,6 @@ def betterEvaluationFunction(currentGameState):
             foodDistance.append(manhattanDistance(newPos, food))
         closestFood = min(foodDistance)
         score += 1 / closestFood
-    
-    if newNumFood < currentNumFood:
-            score += rewardBias
     
     for newGhostPosition in newGhostPositions:
         successorGhostDistance = manhattanDistance(newPos, newGhostPosition)
