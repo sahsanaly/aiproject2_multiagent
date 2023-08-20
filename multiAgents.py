@@ -103,10 +103,11 @@ class ReflexAgent(Agent):
                 score -= 1 / (successorGhostDistance + nonZeroAdjustment) 
             if successorGhostDistance <= tooClose:
                 score -= 1 / (successorGhostDistance + nonZeroAdjustment) 
-            if newScaredTimes[0] > 0:
-                score += rewardBias
-                if successorGhostDistance < newScaredTimes[0]:
-                    score += 1 / (successorGhostDistance + nonZeroAdjustment)
+            for i in range(successorGameState.getNumAgents()-1):
+                if newScaredTimes[i] > 0:
+                    score += rewardBias
+                    if successorGhostDistance < newScaredTimes[i]:
+                        score += 1 / (successorGhostDistance + nonZeroAdjustment)
             
         return score
 
@@ -273,9 +274,9 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
         legal moves.
         """
         "*** YOUR CODE HERE ***"
-        return self.minimax(gameState, 0, 0)[1]
+        return self.expectimax(gameState, 0, 0)[1]
     
-    def minimax(self, gameState, depth, agentIndex):
+    def expectimax(self, gameState, depth, agentIndex):
         if gameState.isWin() or gameState.isLose() or depth == self.depth:
             return self.evaluationFunction(gameState), ""
         
@@ -291,7 +292,7 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
         v2 = []
         for a in gameState.getLegalActions(agentIndex):
             successor = gameState.generateSuccessor(agentIndex, a)
-            v2 = self.minimax(successor, depth, agentIndex+1)[0]
+            v2 = self.expectimax(successor, depth, agentIndex+1)[0]
             if v2 > v:
                 v, move = v2, a
         return v, move
@@ -307,7 +308,7 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
             if successor_agentIndex == gameState.getNumAgents():
                 successor_agentIndex = 0
                 successor_depth += 1
-            v2.append(self.minimax(successor, successor_depth, successor_agentIndex)[0])
+            v2.append(self.expectimax(successor, successor_depth, successor_agentIndex)[0])
             chanceNode.append(a)
         v = sum(v2) / len(v2)
         move = random.choice(chanceNode)
@@ -349,11 +350,12 @@ def betterEvaluationFunction(currentGameState):
             score -= 1 / (ghostDistance + nonZeroAdjustment) 
         if ghostDistance <= tooClose:
             score -= 1 / (ghostDistance + nonZeroAdjustment) 
-        if scaredTimes[0] > 0:
-            score += rewardBias
-            if ghostDistance < scaredTimes[0]:
-                score += 1 / (ghostDistance + nonZeroAdjustment)
-        
+        for i in range(currentGameState.getNumAgents()-1):
+            if scaredTimes[i] > 0:
+                score += rewardBias
+                if ghostDistance < scaredTimes[i]:
+                    score += 1 / (ghostDistance + nonZeroAdjustment)
+                    
     return score
 
 # Abbreviation
