@@ -75,27 +75,41 @@ class ReflexAgent(Agent):
 
         "*** YOUR CODE HERE ***"
         
+        # important variables for current and successor states
         score = successorGameState.getScore()
         newGhostPositions = successorGameState.getGhostPositions()
         currentNumFood = currentGameState.getNumFood()
         newNumFood = successorGameState.getNumFood()
+        
+        # variables for lists and bias variables
         closestFood = 0
         foodDistance = []
-        rewardBias = 20
-        nonZeroAdjustment = 1
-        ghostNearby = 5
-        tooClose = 1
+        nonZeroAdjustment = 1   # to eliminate math error for dividing by zero
+        ghostNearby = 5         # distance if the ghost is nearby
+        tooClose = 1            # distance if the ghost is too close to pacman
+
+        foodList = newFood.asList()     # coordinates of food as a list
         
-        foodList = newFood.asList()
+        # if there is food in the game state, include the food in the list, then
+        # increase the reciprocal value(distance) of the closest food
         if len(foodList) > 0:
             for food in foodList:
                 foodDistance.append(manhattanDistance(newPos, food))
             closestFood = min(foodDistance)
             score += 1 / closestFood
         
+        # if the successor number of food is lesser than the current ones, then
+        # increase the score by the reciprocal of the successor number of food
         if newNumFood < currentNumFood:
-                score += rewardBias
+            if newNumFood > 0:
+                score += 1 / newNumFood
         
+        # For every ghost, calculate the successor ghost posiition
+        # If the successor ghost is nearby (distance of 5), or too close (distance of 1), 
+        # increase the reciprocal of the distance to the score
+        # If the ghost is scared then increase the score by the reciprocal of the food number
+        # And if the ghostdistance is too close when it is scared, increament the score as well, 
+        # which allows the pacman to come close to the ghost only if it's scared
         for newGhostPosition in newGhostPositions:
             successorGhostDistance = manhattanDistance(newPos, newGhostPosition)
             
@@ -105,7 +119,7 @@ class ReflexAgent(Agent):
                 score -= 1 / (successorGhostDistance + nonZeroAdjustment) 
             for i in range(successorGameState.getNumAgents()-1):
                 if newScaredTimes[i] > 0:
-                    score += rewardBias
+                    score += 1 / (newNumFood + nonZeroAdjustment)
                     if successorGhostDistance < newScaredTimes[i]:
                         score += 1 / (successorGhostDistance + nonZeroAdjustment)
             
