@@ -184,8 +184,12 @@ class MinimaxAgent(MultiAgentSearchAgent):
         Returns whether or not the game state is a losing state
         """
         "*** YOUR CODE HERE ***"
+        # returns the action state
         return self.minimax(gameState, 0, 0)[1]
     
+    # This minimax function returns the score if player wins, loses or the depth
+    # reached the self.depth, otherwise calls the max or min function depending on
+    # which agent it is. Player's agent index is zero
     def minimax(self, gameState, depth, agentIndex):
         if gameState.isWin() or gameState.isLose() or depth == self.depth:
             return self.evaluationFunction(gameState), ""
@@ -197,6 +201,9 @@ class MinimaxAgent(MultiAgentSearchAgent):
 
         return result
         
+    # The max valuation function initializes the starting value to negative
+    # infinity. It then compares all its successors value, which comes out of the min 
+    # function and selects the maximum value and returns it along with its action/move
     def maxValue(self, gameState, depth, agentIndex):
         v, move  = float('-inf'), ""
         for a in gameState.getLegalActions(agentIndex):
@@ -206,6 +213,11 @@ class MinimaxAgent(MultiAgentSearchAgent):
                 v, move = v2, a
         return v, move
     
+    # The min valuation function initializes the starting value to positive
+    # infinity. It then compares all its successors value, which comes out of the max or
+    # other min function and selects the minimum value and returns it along with its
+    # action/move. It also checks if there is any more agent left in the cycle, if not 
+    # then it increases the depth and and defines the agent index back to 0
     def minValue(self, gameState, depth, agentIndex):
         v, move = float('inf'), ""
         for a in gameState.getLegalActions(agentIndex):
