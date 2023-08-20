@@ -243,6 +243,11 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
         Returns the minimax action using self.depth and self.evaluationFunction
         """
         "*** YOUR CODE HERE ***"
+        
+    # This class is exactly the same as the minimax, except that it checks for alpha
+    # and beta pruning in max and min value function, respectively, and prunes if the 
+    # condition follows.
+    
         alpha = float('-inf')
         beta = float('inf')
         return self.alphaBeta(gameState, 0, 0, alpha, beta)[1]
@@ -266,6 +271,7 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
             if v2 > v:
                 v, move = v2, a
                 alpha = max(alpha, v)
+            # alpha pruning
             if v > beta:
                 return v, move
         return v, move
@@ -283,6 +289,7 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
             if v2 < v:
                 v, move = v2, a
                 beta = min(beta, v)
+            # beta pruning
             if v < alpha:
                 return v, move
         return v, move
