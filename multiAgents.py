@@ -307,6 +307,12 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
         legal moves.
         """
         "*** YOUR CODE HERE ***"
+        
+    # This class is exactly the same as the minimax, except that it implemets the
+    # chance node in the chanceValue function instead of the min node in the tree.
+    # The chance value is the expected value coming from the minimum nodes and is the
+    # average of the minimum values
+    
         return self.expectimax(gameState, 0, 0)[1]
     
     def expectimax(self, gameState, depth, agentIndex):
@@ -341,9 +347,10 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
             if successor_agentIndex == gameState.getNumAgents():
                 successor_agentIndex = 0
                 successor_depth += 1
+            # Adding the minimum values of the min nodes to a list
             v2.append(self.expectimax(successor, successor_depth, successor_agentIndex)[0])
             chanceNode.append(a)
-        v = sum(v2) / len(v2)
+        v = sum(v2) / len(v2)   # averaging the successor minimum values
         move = random.choice(chanceNode)
         return v, move
 
