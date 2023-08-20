@@ -336,6 +336,11 @@ def betterEvaluationFunction(currentGameState):
     DESCRIPTION: <write something here so we know what you did>
     """
     "*** YOUR CODE HERE ***"
+    
+    # This function is exactly the same as the evalution function. The only distance
+    # difference is that it does not consider the actions and the successor states but 
+    # only the current ones. The rest of the evaluation function is exactly the same
+    
     currentPosition = currentGameState.getPacmanPosition()
     remainingFood = currentGameState.getFood()
     ghostStates = currentGameState.getGhostStates()
