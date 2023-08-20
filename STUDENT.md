@@ -10,6 +10,6 @@
 
 **Team members:**
 
-* Student's student number - Full Name - RMIT Student email - Student Github username
+* 3736294 - Syed Ahsan Ali - s3736294@student.rmit.edu.au - sahsanaly
 
 Student numbers should just be the **numbers**.
